@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
+  <includeClasses>
+    <classEntry path="com.shrimp.particle.ColorARGB"/>
+    <classEntry path="com.shrimp.particle.Particle"/>
+    <classEntry path="com.shrimp.particle.ParticleSystem"/>
+    <classEntry path="com.shrimp.particle.interfaces.IAnimatable"/>
+    <classEntry path="com.shrimp.particle.utils.MathUtil"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests/>
+</flexLibProperties>
