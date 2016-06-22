@@ -19,7 +19,7 @@ package com.shrimp.particle
 	public class ParticleSystem extends Sprite implements IAnimatable
 	{
 		public static const EMITTER_TYPE_GRAVITY:int = 0;
-		public static const EMITTER_TYPE_RADIAL:int  = 1;
+		public static const EMITTER_TYPE_RADIAL:int = 1;
 
 		// 最大粒子数
 		public static const MAX_NUM_PARTICLES:int = 16383;
@@ -56,14 +56,14 @@ package com.shrimp.particle
 			this.particles = new Vector.<Particle>(0, false);
 			this.emmitRate = 10;
 			this.frameTime = 0.0;
-			this.p_capacity =128;
+			this.p_capacity = 128;
 			this.p_emitX = this.p_emitY = 0.0;
 			this.totalTime = 0.0
 
 			var p:XMLParser = new XMLParser();
-			p.parse(this,config);
-			this.t = new Timer(30);
-			this.t.addEventListener(TimerEvent.TIMER, onEnterFrameHandler);			
+			p.parse(this, config);
+//			this.t = new Timer(30);
+//			this.t.addEventListener(TimerEvent.TIMER, onEnterFrameHandler);			
 		}
 
 		/**
@@ -81,7 +81,8 @@ package com.shrimp.particle
 			p.currentTime = 0.0;
 			p.totalTime = lifespan > 0.0 ? lifespan : 0.0;
 
-			if(lifespan <= 0.0) return;
+			if(lifespan <= 0.0)
+				return;
 
 			var emitX:Number = this.p_emitX;
 			var emitY:Number = this.p_emitY;
@@ -91,7 +92,7 @@ package com.shrimp.particle
 			//			display.x = emitX + getRangeWave(this.p_emitXV);
 			//			display.y = emitY + getRangeWave(this.p_emitYV);
 
-			p.display.x =  emitX + getRangeWave(this.p_emitXV);
+			p.display.x = emitX + getRangeWave(this.p_emitXV);
 			p.display.y = emitY + getRangeWave(this.p_emitYV);
 
 			p.startX = emitX;
@@ -116,8 +117,10 @@ package com.shrimp.particle
 			// 尺寸
 			var startSize:Number = this.p_startSize + getRangeWave(this.p_startSizeV);
 			var endSize:Number = this.p_endSize + getRangeWave(this.p_endSizeV);
-			if(startSize < 0.1) startSize = 0.1;
-			if(endSize < 0.1) endSize = 0.1;
+			if(startSize < 0.1)
+				startSize = 0.1;
+			if(endSize < 0.1)
+				endSize = 0.1;
 			p.scale = startSize / textureWidth;
 			p.scaleDelta = ((endSize - startSize) / lifespan) / textureWidth;
 
@@ -135,15 +138,15 @@ package com.shrimp.particle
 			var endColorBlue:Number = this.p_endColor.blue + getRangeWave(this.p_endColorV.blue);
 			var endColorAlpha:Number = this.p_endColor.alpha + getRangeWave(this.p_endColorV.alpha);
 
-			colorDelta.red   = (endColorRed   - startColor.red)   / lifespan;
+			colorDelta.red = (endColorRed - startColor.red) / lifespan;
 			colorDelta.green = (endColorGreen - startColor.green) / lifespan;
-			colorDelta.blue  = (endColorBlue  - startColor.blue)  / lifespan;
+			colorDelta.blue = (endColorBlue - startColor.blue) / lifespan;
 			colorDelta.alpha = (endColorAlpha - startColor.alpha) / lifespan;
 
 			// 旋转
 
 			var startRotation:Number = this.p_startRotation + getRangeWave(this.p_startRotationV);
-			var endRotation:Number   = this.p_endRotation   + getRangeWave(this.p_endRotationV);
+			var endRotation:Number = this.p_endRotation + getRangeWave(this.p_endRotationV);
 			p.rotation = startRotation;
 			p.rotationDelta = (endRotation - startRotation) / lifespan;
 
@@ -168,8 +171,8 @@ package com.shrimp.particle
 		public function start(duration:Number = Number.MAX_VALUE):void
 		{
 			this.totalTime = duration;
-			//			s.addEventListener(Event.ENTER_FRAME, onEnterFrameHandler);
-			this.t.start();
+			s.addEventListener(Event.ENTER_FRAME, onEnterFrameHandler);
+//			this.t.start();
 		}
 
 		/**
@@ -179,8 +182,8 @@ package com.shrimp.particle
 		 */
 		public function stop(clear:Boolean = false):void
 		{
-			//			s.removeEventListener(Event.ENTER_FRAME, onEnterFrameHandler);
-			this.t.stop();
+			s.removeEventListener(Event.ENTER_FRAME, onEnterFrameHandler);
+//			this.t.stop();
 		}
 
 		/**
@@ -215,9 +218,11 @@ package com.shrimp.particle
 				{
 					advanceParticle(p, time);
 					++particleIndex;
-				} else {
+				}
+				else
+				{
 					removeChild(p.display);
-					if(particleIndex != numParticles -1)
+					if(particleIndex != numParticles - 1)
 					{
 						var nextP:Particle = particles[numParticles - 1];
 						particles[numParticles - 1] = p;
@@ -298,12 +303,12 @@ package com.shrimp.particle
 			var i:int;
 			var oldCapacity:int = p_capacity;
 			var newCapacity:int = value > MAX_NUM_PARTICLES ? MAX_NUM_PARTICLES : value;
-			for (i=oldCapacity; i<newCapacity; ++i)
+			for(i = oldCapacity; i < newCapacity; ++i)
 			{
 				particles[i] = createParticle();
 			}
 
-			if (newCapacity < oldCapacity)
+			if(newCapacity < oldCapacity)
 			{
 				particles.length = newCapacity;
 			}
@@ -329,7 +334,8 @@ package com.shrimp.particle
 				var distanceX:Number = p.display.x - p.startX;
 				var distanceY:Number = p.display.y - p.startY;
 				var distanceScalar:Number = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-				if(distanceScalar < 0.01) distanceScalar = 0.01;
+				if(distanceScalar < 0.01)
+					distanceScalar = 0.01;
 
 				var radialX:Number = distanceX / distanceScalar;
 				var radialY:Number = distanceY / distanceScalar;
@@ -355,7 +361,7 @@ package com.shrimp.particle
 			p.colorARGB.red += p.colorDelta.red * t;
 			p.colorARGB.green += p.colorDelta.green * t;
 			p.colorARGB.blue += p.colorDelta.blue * t;
-			p.colorARGB.alpha += p.colorDelta.alpha *  t;
+			p.colorARGB.alpha += p.colorDelta.alpha * t;
 
 			p.color = p.colorARGB.toRGB();
 			p.alpha = p.colorARGB.alpha;
@@ -373,7 +379,7 @@ package com.shrimp.particle
 		 * @param v
 		 * @return
 		 *
-		 */		
+		 */
 		public function getRangeWave(v:Number):Number
 		{
 			return v * (Math.random() * 2.0 - 1.0);

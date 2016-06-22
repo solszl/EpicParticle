@@ -33,16 +33,17 @@ package com.shrimp.particle
 			return int(r * 255) << 16 | int(g * 255) << 8 | int(b * 255);
 		}
 
-		public function toColorTransform(delta:ColorARGB):ColorTransform
+		public function toColorTransform():ColorTransform
 		{
+			//delta:ColorARGB
 			ct.redMultiplier = red;
-			ct.redOffset = delta.red * 255;
+//			ct.redOffset = delta.red * 255;
 			ct.greenMultiplier = green;
-			ct.greenOffset = delta.green * 255;
+//			ct.greenOffset = delta.green * 255;
 			ct.blueMultiplier = blue;
-			ct.blueOffset = delta.blue * 255;
+//			ct.blueOffset = delta.blue * 255;
 			ct.alphaMultiplier = alpha;
-			ct.alphaOffset = delta.alpha * 255;
+//			ct.alphaOffset = delta.alpha * 255;
 			return ct;
 		}
 	}

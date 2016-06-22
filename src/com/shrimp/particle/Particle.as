@@ -59,7 +59,7 @@ package com.shrimp.particle
 			color = 0xffffff;
 			colorARGB = new ColorARGB();
 			colorDelta = new ColorARGB();
-			display= new Bitmap(null,"auto",true);
+			display= new Bitmap(null);
 		}
 
 		/**
@@ -93,10 +93,13 @@ package com.shrimp.particle
 			//			m.scale(scale,scale);
 			//			bmd.draw(bmd,m);
 			//			this.bmd.unlock();
+			
 			display.bitmapData = this.bmd;
 			display.rotation = rotation;
 			display.scaleX = scale;
 			display.scaleY = scale;
+			display.transform.colorTransform = colorARGB.toColorTransform();
+			display.blendMode = BlendMode.ADD
 
 		}
 
