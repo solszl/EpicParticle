@@ -2,6 +2,7 @@ package com.shrimp.particle
 {
 	import com.shrimp.particle.interfaces.IAnimatable;
 	import com.shrimp.particle.parser.XMLParser;
+	import com.vhall.framework.app.manager.StageManager;
 
 	import flash.display.BitmapData;
 	import flash.display.Sprite;
@@ -19,13 +20,11 @@ package com.shrimp.particle
 	public class ParticleSystem extends Sprite implements IAnimatable
 	{
 		public static const EMITTER_TYPE_GRAVITY:int = 0;
+
 		public static const EMITTER_TYPE_RADIAL:int = 1;
 
 		// 最大粒子数
-		public static const MAX_NUM_PARTICLES:int = 16383;
-
-		/**	舞台*/
-		private var s:Stage;
+		public static const MAX_NUM_PARTICLES:int = 4096;
 
 		/** 当前帧的时间戳*/
 		private var frameTimestamp:Number = 0.0;
@@ -47,11 +46,8 @@ package com.shrimp.particle
 
 		private var _p_capacity:int;
 
-		private var t:Timer;
-
-		public function ParticleSystem(stage:Stage, texture:BitmapData, config:String)
+		public function ParticleSystem(texture:BitmapData, config:String)
 		{
-			this.s = stage;
 			this.texture = texture;
 			this.particles = new Vector.<Particle>(0, false);
 			this.emmitRate = 10;
@@ -62,8 +58,6 @@ package com.shrimp.particle
 
 			var p:XMLParser = new XMLParser();
 			p.parse(this, config);
-//			this.t = new Timer(30);
-//			this.t.addEventListener(TimerEvent.TIMER, onEnterFrameHandler);			
 		}
 
 		/**
@@ -86,11 +80,6 @@ package com.shrimp.particle
 
 			var emitX:Number = this.p_emitX;
 			var emitY:Number = this.p_emitY;
-
-			//			var display:Bitmap = new Bitmap(p.texture);
-			// 设置P的位置
-			//			display.x = emitX + getRangeWave(this.p_emitXV);
-			//			display.y = emitY + getRangeWave(this.p_emitYV);
 
 			p.display.x = emitX + getRangeWave(this.p_emitXV);
 			p.display.y = emitY + getRangeWave(this.p_emitYV);
@@ -117,31 +106,18 @@ package com.shrimp.particle
 			// 尺寸
 			var startSize:Number = this.p_startSize + getRangeWave(this.p_startSizeV);
 			var endSize:Number = this.p_endSize + getRangeWave(this.p_endSizeV);
+
 			if(startSize < 0.1)
 				startSize = 0.1;
+
 			if(endSize < 0.1)
 				endSize = 0.1;
 			p.scale = startSize / textureWidth;
 			p.scaleDelta = ((endSize - startSize) / lifespan) / textureWidth;
 
 			// 颜色
-			var startColor:ColorARGB = p.colorARGB;
-			var colorDelta:ColorARGB = p.colorDelta;
-
-			startColor.red = this.p_startColor.red + getRangeWave(this.p_startColorV.red);
-			startColor.green = this.p_startColor.green + getRangeWave(this.p_startColorV.green);
-			startColor.blue = this.p_startColor.blue + getRangeWave(this.p_startColorV.blue);
-			startColor.alpha = this.p_startColor.alpha + getRangeWave(this.p_startColorV.alpha);
-
-			var endColorRed:Number = this.p_endColor.red + getRangeWave(this.p_endColorV.red);
-			var endColorGreen:Number = this.p_endColor.green + getRangeWave(this.p_endColorV.green);
-			var endColorBlue:Number = this.p_endColor.blue + getRangeWave(this.p_endColorV.blue);
-			var endColorAlpha:Number = this.p_endColor.alpha + getRangeWave(this.p_endColorV.alpha);
-
-			colorDelta.red = (endColorRed - startColor.red) / lifespan;
-			colorDelta.green = (endColorGreen - startColor.green) / lifespan;
-			colorDelta.blue = (endColorBlue - startColor.blue) / lifespan;
-			colorDelta.alpha = (endColorAlpha - startColor.alpha) / lifespan;
+			p.colorARGB = this.p_startColor.add(this.p_startColorV);
+			p.colorDelta = this.p_endColor.add(this.p_endColorV).sub(p.colorARGB).div(lifespan);
 
 			// 旋转
 
@@ -171,8 +147,7 @@ package com.shrimp.particle
 		public function start(duration:Number = Number.MAX_VALUE):void
 		{
 			this.totalTime = duration;
-			s.addEventListener(Event.ENTER_FRAME, onEnterFrameHandler);
-//			this.t.start();
+			StageManager.stage.addEventListener(Event.ENTER_FRAME, onEnterFrameHandler);
 		}
 
 		/**
@@ -182,8 +157,7 @@ package com.shrimp.particle
 		 */
 		public function stop(clear:Boolean = false):void
 		{
-			s.removeEventListener(Event.ENTER_FRAME, onEnterFrameHandler);
-//			this.t.stop();
+			StageManager.stage.removeEventListener(Event.ENTER_FRAME, onEnterFrameHandler);
 		}
 
 		/**
@@ -204,8 +178,6 @@ package com.shrimp.particle
 		 */
 		public function advanceTime(time:Number):void
 		{
-			//			time = parseFloat(time.toFixed(3));
-			//			trace(time);
 			var particleIndex:int = 0;
 			var p:Particle;
 			var maxNumParticles:int = p_capacity;
@@ -213,6 +185,7 @@ package com.shrimp.particle
 			while(particleIndex < numParticles)
 			{
 				p = particles[particleIndex];
+
 				// 如果活着。更新状态，否则修改列表
 				if(p.isLive)
 				{
@@ -222,6 +195,7 @@ package com.shrimp.particle
 				else
 				{
 					removeChild(p.display);
+
 					if(particleIndex != numParticles - 1)
 					{
 						var nextP:Particle = particles[numParticles - 1];
@@ -230,6 +204,7 @@ package com.shrimp.particle
 					}
 
 					--numParticles;
+
 					if(numParticles == 0 && totalTime == 0)
 					{
 						trace("Over1");
@@ -243,6 +218,7 @@ package com.shrimp.particle
 				// 根据秒射粒子数 求每隔多久来一发新的
 				var interval:Number = 1.0 / emmitRate;
 				frameTime += time;
+
 				// 发射新的粒子 
 				while(frameTime > 0)
 				{
@@ -283,7 +259,7 @@ package com.shrimp.particle
 				passedTime = 1.0;
 
 			if(passedTime < 0.0)
-				passedTime = 1.0 / s.frameRate;
+				passedTime = 1.0 / StageManager.stage.frameRate;
 
 			advanceTime(passedTime * 1000 / 1000);
 		}
@@ -303,6 +279,7 @@ package com.shrimp.particle
 			var i:int;
 			var oldCapacity:int = p_capacity;
 			var newCapacity:int = value > MAX_NUM_PARTICLES ? MAX_NUM_PARTICLES : value;
+
 			for(i = oldCapacity; i < newCapacity; ++i)
 			{
 				particles[i] = createParticle();
@@ -334,6 +311,7 @@ package com.shrimp.particle
 				var distanceX:Number = p.display.x - p.startX;
 				var distanceY:Number = p.display.y - p.startY;
 				var distanceScalar:Number = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+
 				if(distanceScalar < 0.01)
 					distanceScalar = 0.01;
 
@@ -363,9 +341,6 @@ package com.shrimp.particle
 			p.colorARGB.blue += p.colorDelta.blue * t;
 			p.colorARGB.alpha += p.colorDelta.alpha * t;
 
-			p.color = p.colorARGB.toRGB();
-			p.alpha = p.colorARGB.alpha;
-
 			p.update();
 		}
 
@@ -384,85 +359,117 @@ package com.shrimp.particle
 		{
 			return v * (Math.random() * 2.0 - 1.0);
 		}
+
 		//======================================粒子位置相关
 		//	发射器X坐标
 		public var p_emitX:Number;
+
 		//	发射器X浮动值
 		public var p_emitXV:Number;
+
 		//	发射器Y坐标
 		public var p_emitY:Number;
+
 		//	发射器Y浮动值
 		public var p_emitYV:Number;
+
 		// 粒子喷射类型，重力型还是雷达型
 		public var p_emitType:int;
+
 		// 粒子默认播放时长
 		public var p_defaultDuration:Number;
 
 		//======================================粒子重力相关
 		// 重力X
 		public var p_gravityX:Number;
+
 		// 重力Y
 		public var p_gravityY:Number;
+
 		// 速度
 		public var p_speed:Number;
+
 		// 速度浮动值
 		public var p_speedV:Number;
+
 		// 线性加速度
 		public var p_radialAccleration:Number;
+
 		// 线性加速度浮动值
 		public var p_radialAcclerationV:Number;
+
 		// 正切加速度
 		public var p_tangentialAccleration:Number;
+
 		// 正切加速度浮动值
 		public var p_tangentialAcclerationV:Number;
 
 		//======================================粒子线性相关
 		// 最大半径
 		public var p_maxRadius:Number;
+
 		// 最大半径浮动值
 		public var p_maxRadiusV:Number;
+
 		// 最小半径
 		public var p_minRadius:Number;
+
 		// 最小半径浮动值
 		public var p_minRadiusV:Number;
+
 		// 每秒旋转角度
 		public var p_rotatePerSecond:Number;
+
 		// 每秒旋转角度浮动值
 		public var p_rotatePerSecondV:Number;
 
 		//======================================粒子基础属性相关
 		// 粒子生命周期，即totalTime
 		public var p_lifeSpan:Number;
+
 		// 粒子生命周期浮动值
 		public var p_lifeSpanV:Number;
+
 		// 初始时大小
 		public var p_startSize:Number;
+
 		// 初始大小浮动值
 		public var p_startSizeV:Number;
+
 		// 结束时大小
 		public var p_endSize:Number;
+
 		// 结束大小浮动值
 		public var p_endSizeV:Number;
+
 		// 发射角度
 		public var p_emitAngle:Number;
+
 		// 发射角度浮动值
 		public var p_emitAngleV:Number;
+
 		// 初始化角度
 		public var p_startRotation:Number;
+
 		// 初始化角度浮动值
 		public var p_startRotationV:Number;
+
 		// 结束角度
 		public var p_endRotation:Number;
+
 		// 结束角度浮动值
 		public var p_endRotationV:Number;
 
 		//======================================粒子颜色属性相关
 		// 初始颜色
 		public var p_startColor:ColorARGB;
+
 		// 初始颜色浮动值
 		public var p_startColorV:ColorARGB;
+
 		// 结束时颜色
 		public var p_endColor:ColorARGB;
+
 		// 结束颜色浮动值
 		public var p_endColorV:ColorARGB;
 	}

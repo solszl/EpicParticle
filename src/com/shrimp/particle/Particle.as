@@ -24,13 +24,8 @@ package com.shrimp.particle
 		public var currentTime:Number;
 		/**	粒子总时长*/
 		public var totalTime:Number;
-		/**	混合模式，默认为add*/
-		public var blendMode:String = BlendMode.ADD;
-		/**	模糊滤镜*/
-		public var blur:BlurFilter
 		/** 粒子是否还活着*/
 		private var _isLive:Boolean;
-		public var alpha:Number;
 		public var scale:Number;
 		public var startX:Number, startY:Number;
 		public var velocityX:Number, velocityY:Number;
@@ -42,24 +37,16 @@ package com.shrimp.particle
 		public var scaleDelta:Number;
 		public var rotation:Number;
 
-		public var x:Number;
-		public var y:Number;
-		public var color:uint;
-
 		private var bmd:BitmapData;
-
 		public var display:Bitmap;
+
 		public function Particle(texture:BitmapData = null)
 		{
-			this.bmd = texture;
-
-			blur = new BlurFilter(4,4);
-			x = y = rotation = currentTime = 0.0;
-			totalTime = alpha = scale = 1.0;
-			color = 0xffffff;
+			rotation = currentTime = 0.0;
+			totalTime = scale = 1.0;
 			colorARGB = new ColorARGB();
 			colorDelta = new ColorARGB();
-			display= new Bitmap(null);
+			display= new Bitmap(texture);
 		}
 
 		/**
@@ -72,46 +59,21 @@ package com.shrimp.particle
 
 		public function set texture(value:BitmapData):void
 		{
-			this.bmd = value;
+			display.bitmapData = value;
 		}
 
 		public function get texture():BitmapData
 		{
-			return this.bmd;
+			return display.bitmapData;
 		}
 
-		private static const m:Matrix = new Matrix();
 		public function update():void
 		{
-			//			this.bmd.lock();
-			//			// 颜色
-			//			//			//			bmd.draw(bmd,m,colorARGB.toColorTransform(),BlendMode.HARDLIGHT);
-			//			//			//			bmd.applyFilter(bmd,bmd.rect,new Point(),blur);
-			//
-			//			//			bmd.colorTransform(bmd.rect,colorARGB.toColorTransform(colorDelta));
-			//			m.identity();
-			//			m.scale(scale,scale);
-			//			bmd.draw(bmd,m);
-			//			this.bmd.unlock();
-			
-			display.bitmapData = this.bmd;
 			display.rotation = rotation;
 			display.scaleX = scale;
 			display.scaleY = scale;
 			display.transform.colorTransform = colorARGB.toColorTransform();
 			display.blendMode = BlendMode.ADD
-
-		}
-
-		public function rad2deg(rad:Number):Number
-		{
-			return rad / Math.PI * 180.0;            
-		}
-
-		/** Converts an angle from degrees into radians. */
-		public function deg2rad(deg:Number):Number
-		{
-			return deg / 180.0 * Math.PI;   
 		}
 	}
 }

@@ -35,16 +35,56 @@ package com.shrimp.particle
 
 		public function toColorTransform():ColorTransform
 		{
-			//delta:ColorARGB
 			ct.redMultiplier = red;
-//			ct.redOffset = delta.red * 255;
 			ct.greenMultiplier = green;
-//			ct.greenOffset = delta.green * 255;
 			ct.blueMultiplier = blue;
-//			ct.blueOffset = delta.blue * 255;
 			ct.alphaMultiplier = alpha;
-//			ct.alphaOffset = delta.alpha * 255;
 			return ct;
+		}
+
+		public function add(color:ColorARGB):ColorARGB
+		{
+			var c:ColorARGB = new ColorARGB(red,green,blue,alpha);
+			c.red += getRangeWave(color.red);
+			c.green += getRangeWave(color.green);
+			c.blue += getRangeWave(color.blue);
+			c.alpha += getRangeWave(color.alpha);
+			return c;
+		}
+
+		public function sub(color:ColorARGB):ColorARGB
+		{
+			var c:ColorARGB = new ColorARGB(red,green,blue,alpha);
+			c.red -=  color.red;
+			c.green -= color.green;
+			c.blue -= color.blue;
+			c.alpha -= color.alpha;
+			return c;
+		}
+
+		public function mul(num:Number):ColorARGB
+		{
+			var c:ColorARGB = new ColorARGB(red,green,blue,alpha);
+			c.red *= num;
+			c.green *= num;
+			c.green *= num;
+			c.alpha *= num;
+			return c;
+		}
+
+		public function div(num:Number):ColorARGB
+		{
+			var c:ColorARGB = new ColorARGB(red,green,blue,alpha);
+			c.red /= num;
+			c.green /= num;
+			c.blue /= num;
+			c.alpha /= num;
+			return c;
+		}
+
+		public function getRangeWave(v:Number):Number
+		{
+			return v * (Math.random() * 2.0 - 1.0);
 		}
 	}
 }
