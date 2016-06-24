@@ -6,10 +6,7 @@ package com.shrimp.particle
 
 	import flash.display.BitmapData;
 	import flash.display.Sprite;
-	import flash.display.Stage;
 	import flash.events.Event;
-	import flash.events.TimerEvent;
-	import flash.utils.Timer;
 	import flash.utils.getTimer;
 
 	/**
