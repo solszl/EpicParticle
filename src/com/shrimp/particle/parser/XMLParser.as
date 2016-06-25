@@ -69,11 +69,6 @@ package com.shrimp.particle.parser
 			}
 			return ps;
 		}
-
-		public function getRangeWave(v:Number):Number
-		{
-			return 0;
-		}
 	}
 }
 
